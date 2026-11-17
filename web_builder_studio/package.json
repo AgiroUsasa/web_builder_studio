@@ -1,8 +1,0 @@
-{
-  "name": "web-builder-studio",
-  "version": "0.3.0",
-  "description": "Editor visual de sitios web con cuentas sincronizadas entre dispositivos",
-  "main": "server.js",
-  "scripts": { "start": "node server.js" },
-  "engines": { "node": ">=16" }
-}
