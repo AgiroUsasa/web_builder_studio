@@ -637,14 +637,67 @@ async function hashPassword(pw,saltHex,forceFallback) {
 }
 /* SERVIDOR: si la app se abre desde server.js, las cuentas y proyectos viven en el servidor y se ven desde cualquier dispositivo.
    Si se abre el HTML directamente (sin servidor) todo sigue funcionando en modo local, como antes. */
-let serverMode=false, migratedCode=null;
+let serverMode=false, migratedCode=null, backend="local", sb=null;
 async function api(method,url,body){
+  if(backend==="supabase")return sbApi(method,url,body);
   const r=await fetch(url,{method,credentials:"same-origin",headers:{"Content-Type":"application/json","X-WB":"1"},body:body===undefined?undefined:JSON.stringify(body)});
   let d={};try{d=await r.json();}catch(e){}
   if(!r.ok)throw Object.assign(new Error(d.error||"No se pudo completar la operación."),{status:r.status});
   return d;
 }
-async function detectServer(){try{const r=await fetch("api/ping",{cache:"no-store"});serverMode=r.ok&&(await r.json()).ok===true;}catch(e){serverMode=false;}}
+/* SUPABASE: cuentas (Supabase Auth) y proyectos (tabla "projects" con reglas por usuario). Se activa si js/config.js tiene URL y clave. */
+const sbUser=u=>({id:u.id,name:(u.user_metadata&&u.user_metadata.name)||String(u.email).split("@")[0],email:u.email});
+function sbErr(e,status){
+  const m=(e&&e.message)||"",st=status||e.status||0,mk=(t,s)=>Object.assign(new Error(t),{status:s});
+  if(/invalid login/i.test(m))return mk("Correo o contraseña incorrectos.",401);
+  if(/not confirmed/i.test(m))return mk("Confirmá tu correo (te enviamos un mensaje) antes de ingresar.",403);
+  if(/already (been )?registered/i.test(m))return mk("Ya existe una cuenta con ese correo.",409);
+  if(/rate limit|too many/i.test(m)||st===429)return mk("Demasiados intentos. Probá de nuevo en unos minutos.",429);
+  if(/password should be/i.test(m))return mk("La contraseña debe tener al menos 8 caracteres.",400);
+  if(st===401||/jwt|not authenticated/i.test(m))return mk("Sesión vencida. Ingresá de nuevo.",401);
+  return mk(m||"No se pudo completar la operación.",st||500);
+}
+async function sbApi(method,url,body){
+  const route=url.replace(/^api\//,""),chk=r=>{if(r.error)throw sbErr(r.error,r.status);return r.data;};
+  if(route==="register"){
+    const d=chk(await sb.auth.signUp({email:body.email,password:body.password,options:{data:{name:body.name}}}));
+    if(!d.session)throw Object.assign(new Error("Te enviamos un correo para confirmar tu cuenta. Confirmalo y después iniciá sesión."),{status:202});
+    return {user:sbUser(d.user)};
+  }
+  if(route==="login")return {user:sbUser(chk(await sb.auth.signInWithPassword({email:body.email,password:body.password})).user)};
+  if(route==="logout"){await sb.auth.signOut();return {ok:true};}
+  if(route==="me"){const {data}=await sb.auth.getSession();if(!data.session)throw Object.assign(new Error("Sesión vencida."),{status:401});return {user:sbUser(data.session.user)};}
+  if(route==="library")return {library:chk(await sb.from("projects").select("meta")).map(x=>x.meta)};
+  const m=/^project\/(\w+)$/.exec(route);
+  if(m){
+    if(method==="GET")return {project:chk(await sb.from("projects").select("data").eq("id",m[1]).single()).data};
+    if(method==="PUT"){const {data:{session}}=await sb.auth.getSession();if(!session)throw Object.assign(new Error("Sesión vencida."),{status:401});chk(await sb.from("projects").upsert({user_id:session.user.id,id:m[1],meta:body.meta,data:body.project,updated:body.meta.updated||0}));return {ok:true};}
+    if(method==="DELETE"){chk(await sb.from("projects").delete().eq("id",m[1]));return {ok:true};}
+  }
+  throw Object.assign(new Error("Operación no disponible."),{status:404});
+}
+/* Recuperar contraseña con Supabase: llega un correo con un enlace; al volver a la app se elige la nueva contraseña. */
+function askNewPassword(){
+  const d=$("#newPwDialog");if(d.open)return;$("#newPwInput").value="";$("#newPwError").textContent="";d.showModal();
+}
+$("#newPwDialog").addEventListener("cancel",e=>e.preventDefault());
+$("#newPwSave").addEventListener("click",async()=>{
+  const pw=$("#newPwInput").value;if(pw.length<8){$("#newPwError").textContent="La contraseña debe tener al menos 8 caracteres.";return;}
+  const r=await sb.auth.updateUser({password:pw});
+  if(r.error){$("#newPwError").textContent=sbErr(r.error).message;return;}
+  $("#newPwDialog").close();history.replaceState(null,"",location.pathname);showToast("Contraseña actualizada");
+});
+async function detectServer(){
+  const c=window.WB_CONFIG||{};
+  if(c.supabaseUrl&&c.supabaseAnonKey&&window.supabase){
+    sb=window.supabase.createClient(c.supabaseUrl,c.supabaseAnonKey,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
+    backend="supabase";serverMode=true;
+    sb.auth.onAuthStateChange(ev=>{if(ev==="PASSWORD_RECOVERY")askNewPassword();});
+    {const card=$("#recoveryRow").parentElement;card.classList.add("hidden");if(card.previousElementSibling)card.previousElementSibling.classList.add("hidden");}
+    return;
+  }
+  try{const r=await fetch("api/ping",{cache:"no-store"});serverMode=r.ok&&(await r.json()).ok===true;if(serverMode)backend="node";}catch(e){serverMode=false;}
+}
 /* Cola de cambios pendientes: sobrevive si se cierra la pestaña o se corta internet, y se envía al volver. */
 const pendKey=()=>`webbuilder-pending-${currentUser.id}`;
 function pendGet(){try{return JSON.parse(localStorage.getItem(pendKey()))||{};}catch(e){return {};}}
@@ -812,6 +865,11 @@ function setAuthMode(mode) {
   $("#authPassword").autocomplete=(reg||rst)?"new-password":"current-password";
   $("#authPassword").value="";$("#authConfirm").value="";$("#authCode").value="";
   $("#authError").textContent="";
+  if(backend==="supabase"){
+    const sbr=rst;$("#authCodeRow").classList.add("hidden");$("#authConfirmRow").classList.toggle("hidden",!reg);
+    $("#authPwLabel").classList.toggle("hidden",sbr);$("#authPassword").closest(".pw-wrap").classList.toggle("hidden",sbr);
+    if(sbr){$("#authLead").textContent="Ingresá tu correo y te enviamos un enlace para elegir una nueva contraseña.";$("#authSubmit").textContent="Enviar enlace";}
+  }
 }
 $("#forgotBtn").addEventListener("click",()=>{setAuthMode("reset");$("#authCode").focus();});
 $("#backLoginBtn").addEventListener("click",()=>{setAuthMode("login");$("#authPassword").focus();});
@@ -826,6 +884,8 @@ $("#authForm").addEventListener("submit",async e=>{
     if(!name)return err("Ingresá tu nombre.");
     if(pw.length<8)return err("La contraseña debe tener al menos 8 caracteres.");
     if(pw!==$("#authConfirm").value)return err("Las contraseñas no coinciden.");
+  } else if(authMode==="reset"&&backend==="supabase"){
+    /* sin validaciones extra: solo el correo */
   } else if(authMode==="reset"){
     if(normCode($("#authCode").value).length!==12)return err("Ingresá el código de recuperación completo (12 caracteres).");
     if(pw.length<8)return err("La nueva contraseña debe tener al menos 8 caracteres.");
@@ -836,7 +896,11 @@ $("#authForm").addEventListener("submit",async e=>{
   try{
     if(authMode==="register"){
       const r=await registerUser(name,email,pw);authFails=0;
-      showRecoveryCode(r.code,()=>enterAccount(r.user,$("#authRemember").checked),"register");
+      if(r.code)showRecoveryCode(r.code,()=>enterAccount(r.user,$("#authRemember").checked),"register");else enterAccount(r.user,true);
+    }else if(authMode==="reset"&&backend==="supabase"){
+      const r=await sb.auth.resetPasswordForEmail(email,{redirectTo:location.origin+location.pathname});
+      if(r.error)throw sbErr(r.error,r.status);
+      showToast("Si el correo tiene cuenta, te enviamos un enlace para elegir una nueva contraseña.");setAuthMode("login");
     }else if(authMode==="reset"){
       const r=await resetPassword(email,$("#authCode").value,pw);authFails=0;
       showRecoveryCode(r.code,()=>enterAccount(r.user,true),"reset");

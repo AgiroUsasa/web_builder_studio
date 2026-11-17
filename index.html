@@ -151,7 +151,7 @@
     </div>
     <div class="section-label">CUENTA</div>
     <div class="setting-card">
-      <div class="setting-row" style="cursor:default"><span><b>Código de recuperación</b><small>Sirve para cambiar tu contraseña si la olvidás. Al generar uno nuevo, el anterior deja de funcionar.</small></span></div>
+      <div class="setting-row" id="recoveryRow" style="cursor:default"><span><b>Código de recuperación</b><small>Sirve para cambiar tu contraseña si la olvidás. Al generar uno nuevo, el anterior deja de funcionar.</small></span></div>
       <button type="button" class="outline-btn" id="newRecoveryBtn">Generar código nuevo</button>
     </div>
     <div class="section-label">PROYECTO ACTUAL</div>
@@ -170,6 +170,13 @@
     <div class="recovery-code" id="recoveryCode" aria-live="polite"></div>
     <div class="dialog-actions"><button class="outline-btn" id="copyRecoveryBtn" type="button">Copiar</button><button class="top-btn primary" id="doneRecoveryBtn" type="button">Ya lo guardé</button></div>
   </dialog>
+  <!-- Nueva contraseña: aparece al volver desde el enlace del correo de recuperación (modo Supabase). -->
+  <dialog id="newPwDialog" class="dialog" aria-labelledby="newPwTitle">
+    <div class="dialog-title" id="newPwTitle">Elegí tu nueva contraseña</div>
+    <input id="newPwInput" class="text-input" type="password" autocomplete="new-password" placeholder="Mínimo 8 caracteres">
+    <p class="auth-error" id="newPwError" role="alert"></p>
+    <div class="dialog-actions"><button class="top-btn primary" id="newPwSave" type="button">Guardar contraseña</button></div>
+  </dialog>
   <input id="assetInput" type="file" accept="image/*" multiple hidden>
   <div class="toast" id="toast" role="status"></div>
 
@@ -184,6 +191,8 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/clike/clike.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/hint/show-hint.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/hint/anyword-hint.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+  <script src="js/config.js"></script>
   <script src="js/icons.js"></script>
   <script src="js/ads.js"></script>
   <script src="js/app.js"></script>

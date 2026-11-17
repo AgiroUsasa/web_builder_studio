@@ -9,7 +9,20 @@ Editor visual de sitios web en español, inspirado en el flujo de trabajo de Vis
 3. Abrí `index.html` en un navegador. También podés usar la extensión Live Server.
 4. Para resaltado de sintaxis y autocompletado, necesitás conexión a internet porque CodeMirror se carga desde CDN. Si no hay conexión, el editor sigue funcionando como área de texto.
 
-## Usar tu cuenta en otros dispositivos
+## Publicar en GitHub Pages con cuentas en la nube (Supabase)
+
+GitHub Pages solo sirve archivos estáticos, así que las cuentas y los proyectos se guardan en Supabase (plan gratuito). El navegador habla directo con Supabase; `server.js` no se usa.
+
+1. Creá un proyecto en [supabase.com](https://supabase.com).
+2. En **SQL Editor** pegá el contenido de `supabase/setup.sql` y ejecutalo (crea la tabla y las reglas para que cada usuario vea solo lo suyo).
+3. En **Project Settings → API** copiá el *Project URL* y la clave *anon public*, y pegalos en `js/config.js`.
+4. En **Authentication → Providers → Email** podés desactivar "Confirm email" si querés que las cuentas nuevas entren sin confirmar el correo. Si lo dejás activado, cada usuario recibe un correo para confirmar.
+5. En **Authentication → URL Configuration** poné como *Site URL* la dirección de tu página, por ejemplo `https://agirousasa.github.io/web_builder_studio/`, y agregala también en *Redirect URLs* (la usa el enlace de recuperar contraseña).
+6. Subí todo al repositorio. En GitHub: **Settings → Pages → Deploy from a branch → main / (root)**.
+
+Notas: la recuperación de contraseña se hace por correo (enlace de Supabase), no con código. La clave `anon` es pública por diseño; la seguridad la dan las reglas de `supabase/setup.sql`, por eso no hay que omitir el paso 2.
+
+## Alternativa: servidor propio con Node (sin GitHub Pages)
 
 Las cuentas y los proyectos se guardan en el servidor incluido (`server.js`, solo requiere Node 16 o superior, sin instalar nada más).
 
@@ -46,7 +59,9 @@ Las cuentas y los proyectos se guardan en el servidor incluido (`server.js`, sol
 - `index.html`: interfaz del editor.
 - `css/styles.css`: estilos de la aplicación.
 - `js/ads.js`: anuncios de la pantalla de Inicio.
-- `server.js`: servidor de cuentas y proyectos.
+- `server.js`: servidor de cuentas y proyectos (solo para la alternativa con Node).
+- `js/config.js`: datos de conexión a Supabase.
+- `supabase/setup.sql`: tabla y reglas de seguridad.
 - `js/app.js`: lógica del editor, constructor visual, archivos y exportación.
 - `assets/`: carpeta de destino para las imágenes exportadas.
 
