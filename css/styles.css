@@ -1,0 +1,275 @@
+/* ==========================================================
+   WEBBUILDER STUDIO — HOJA DE ESTILOS
+   Modificá las variables para cambiar el aspecto general.
+========================================================== */
+:root,html[data-theme="dark"]{color-scheme:dark;--bg:#10121a;--bar:#171a24;--gutter:#151925;--panel:#191c27;--panel-a:#191c27ee;--panel2:#202433;--surface:#11141d;--btn:#242938;--hover:#30364a;--stage:#0d1018;--dot:#34394a;--sb-bg:#252b3a;--sb-fg:#b4bed1;--sb-green:#75e0b7;--hint-bg:#22283a;--hint-line:#4b5571;--sel:#3a4260;--chip-bg:#2a2542;--chip-line:#4a3c7b;--chip-fg:#c6baff;--note-bg:#25213b;--note-line:#403765;--note-fg:#b5b0ce;--sel-bg:#262245;--plus-bg:#2a2450;--plus-fg:#b9a9ff;--tab-on-bg:#2d2766;--tab-on-fg:#fff;--link:#a997ff;--line:#303548;--line2:#424a60;--danger:#ff8f9a;--danger-fg:#ffb3bb;--danger-bg:#4a2630;--brand-b:#b7a8ff;--drop-fg:#e5ddff;--auth-1:#2a2060;--auth-2:#16324a;--welcome-ic:#a38dff;--green:#45d6a5;--text:#edf0fa;--text-strong:#fff;--text2:#c5cad8;--text3:#9ca5ba;--muted:#929bb0;--cursor:#fff;--shadow:#0008;--shadow-lg:#000a;--backdrop:#05060bc9;--accent:#7857f5;--font:Inter,"Segoe UI",Arial,sans-serif}
+/* TEMA CLARO: se activa con <html data-theme="light"> desde Ajustes. */
+html[data-theme="light"]{color-scheme:light;--bg:#f3f4f8;--bar:#ffffff;--gutter:#f1f2f7;--panel:#ffffff;--panel-a:#ffffffee;--panel2:#ffffff;--surface:#f6f7fb;--btn:#f0f1f6;--hover:#e7e9f2;--stage:#e9ebf3;--dot:#c9cddb;--sb-bg:#e6e8f1;--sb-fg:#4b5368;--sb-green:#0e9a6c;--hint-bg:#ffffff;--hint-line:#c8ccda;--sel:#d6defa;--chip-bg:#ede9ff;--chip-line:#cfc4fb;--chip-fg:#5b3fd0;--note-bg:#f3f0ff;--note-line:#d9d0fb;--note-fg:#5c5878;--sel-bg:#f0ecff;--plus-bg:#ece8ff;--plus-fg:#5b3fd0;--tab-on-bg:#e9e4ff;--tab-on-fg:#3f2aa8;--link:#5b3fd0;--line:#dde0ea;--line2:#cfd3e0;--danger:#d6293e;--danger-fg:#b3202f;--danger-bg:#fde8eb;--brand-b:#5b3fd0;--drop-fg:#3f2aa8;--auth-1:#e3dcff;--auth-2:#d4ebf8;--welcome-ic:#7857f5;--green:#17a673;--text:#1b2033;--text-strong:#0e1222;--text2:#3b4358;--text3:#667089;--muted:#6b7490;--cursor:#1b2033;--shadow:rgba(30,35,60,.16);--shadow-lg:rgba(30,35,60,.24);--backdrop:rgba(20,24,40,.45)}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:13px var(--font)}button,input,textarea{font:inherit}button{cursor:pointer;color:inherit}.hidden{display:none!important}
+/* 1. Barra superior */
+.topbar{height:54px;display:flex;align-items:center;gap:25px;padding:0 16px;background:var(--bar);border-bottom:1px solid var(--line)}.brand{display:flex;align-items:center;gap:9px;font-weight:700;white-space:nowrap}.brand b{color:var(--brand-b)}.brand-icon{width:28px;height:28px;display:grid;place-items:center;border-radius:8px;background:linear-gradient(135deg,#8c69ff,#5534cb);color:#fff;font-weight:900}.project-title{display:flex;align-items:center;gap:9px;border-left:1px solid var(--line);padding-left:22px;color:var(--text2)}.project-title i,.statusbar i,.live-dot{width:7px;height:7px;border-radius:50%;background:var(--green);display:inline-block}.top-actions{margin-left:auto;display:flex;gap:7px}.top-btn,.outline-btn{border:1px solid var(--line);border-radius:6px;padding:8px 11px;background:var(--btn);color:var(--text);font-size:11px}.top-btn:hover,.outline-btn:hover{border-color:#7860d9}.top-btn.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+/* 2. Columnas */
+.app-layout{height:calc(100vh - 54px);min-height:600px;display:grid;grid-template-columns:235px minmax(400px,1fr) 245px}.panel{background:var(--panel);min-width:0;overflow:auto}.explorer{border-right:1px solid var(--line);padding:13px 11px}.panel-title{display:flex;justify-content:space-between;align-items:center;font-size:10px;font-weight:800;letter-spacing:1.2px;color:var(--text3);padding:0 4px 15px}.mini-actions{display:flex;gap:3px}.mini-actions button{background:none;border:0;color:var(--text3);font-size:17px;padding:1px 5px}.mini-actions button:hover{color:var(--text-strong)}.project-folder{font-size:10px;letter-spacing:.7px;color:var(--text2);display:flex;gap:7px;padding:7px 4px}.file-tree{font-size:11px}.tree-row{height:29px;display:flex;align-items:center;gap:7px;padding:0 7px;border-radius:5px;color:var(--text2);cursor:pointer;white-space:nowrap}.tree-row:hover,.tree-row.active{background:var(--hover);color:var(--text-strong)}.tree-row .tree-actions{margin-left:auto;opacity:0;color:var(--text3)}.tree-row:hover .tree-actions{opacity:1}.tree-indent{padding-left:21px}.file-icon{width:14px;text-align:center;color:#8b9cff}.folder-icon{color:#d5ad65}.explorer-bottom{border-top:1px solid var(--line);margin-top:18px;padding:14px 3px;display:flex;justify-content:space-between;color:var(--text3);font-size:10px}.explorer-bottom button{background:none;border:0;color:var(--link);font-size:10px}
+/* 3. Panel central y pestañas */
+.main-panel{display:flex;flex-direction:column;min-width:0;background:var(--surface)}.tab-strip{height:38px;display:flex;align-items:stretch;background:var(--panel);border-bottom:1px solid var(--line);overflow:auto}.tab{padding:0 15px;display:flex;align-items:center;border-right:1px solid var(--line);color:var(--text3);font-size:11px;white-space:nowrap;cursor:pointer}.tab.active{background:var(--surface);color:var(--text-strong);border-top:2px solid var(--accent)}.toolbar{height:43px;display:flex;align-items:center;justify-content:space-between;padding:0 13px;border-bottom:1px solid var(--hover)}.mode-switch{display:flex;gap:4px;background:var(--panel2);border-radius:6px;padding:3px}.mode{border:0;background:transparent;color:var(--text3);padding:5px 11px;border-radius:4px;font-size:10px}.mode.active{background:#7256df;color:#fff}.toolbar-right{display:flex;align-items:center;gap:7px;color:var(--text3);font-size:9px;letter-spacing:.7px}.toolbar-right button{background:var(--btn);border:1px solid var(--line);border-radius:5px;color:var(--text2);margin-left:8px}.workspace{flex:1;min-height:0;display:flex}.blocks-panel{width:205px;flex:0 0 205px;padding:16px 11px;background:var(--panel);border-right:1px solid var(--line);overflow:auto}.section-label{font-size:9px;letter-spacing:1.3px;font-weight:800;color:var(--text3)}.muted{color:var(--muted)}.small{font-size:10px;line-height:1.55}.block-list{display:grid;gap:4px;margin-top:12px}.block-item{display:flex;align-items:center;gap:8px;text-align:left;padding:8px 6px;border:1px solid transparent;border-radius:7px;background:transparent;color:var(--text)}.block-item:hover{background:var(--hover);border-color:var(--line2)}.block-item b,.block-item small{display:block}.block-item b{font-size:10px}.block-item small{font-size:9px;color:var(--text3);margin-top:3px}.block-item em{font-style:normal;margin-left:auto;color:var(--text3)}.block-symbol{width:27px;height:27px;display:grid;place-items:center;border-radius:6px;font-weight:800}.violet{background:#7857f52b;color:#b6a5ff}.blue{background:#3197d72b;color:#70c6ff}.orange{background:#e9a34a2b;color:#ffc47b}.green{background:#45d6a52b;color:#6de6bc}.pink{background:#e36ba52b;color:#f6a0c6}.cyan{background:#35c2d52b;color:#7ce7f1}.panel-separator{height:1px;background:var(--line);margin:17px 0}.field-label{display:block;color:var(--text3);font-size:10px;margin:13px 0 6px}.text-input{width:100%;padding:8px 9px;border:1px solid var(--line);border-radius:5px;background:var(--surface);color:var(--text);outline:none}.text-input:focus{border-color:var(--accent)}.color-input{width:100%;height:31px;background:var(--surface);border:1px solid var(--line);border-radius:5px;padding:3px}.hint-box{margin-top:15px;padding:10px;border:1px solid var(--note-line);background:var(--note-bg);border-radius:7px;color:var(--note-fg);font-size:9px;line-height:1.6}
+/* 4. Vista previa */
+.canvas-area,.code-area{min-width:0;flex:1;display:flex;flex-direction:column}.canvas-heading{height:48px;display:flex;align-items:center;justify-content:space-between;padding:0 17px}.canvas-heading b,.canvas-heading small{display:block}.canvas-heading b{font-size:11px}.canvas-heading small{font-size:9px;color:var(--text3);margin-top:3px}.device-tools{display:flex;gap:4px}.device{border:1px solid var(--line);background:var(--btn);color:var(--text3);border-radius:5px;padding:5px 9px}.device.active{background:var(--accent);border-color:var(--accent);color:#fff}.preview-stage{position:relative;flex:1;min-height:0;overflow:auto;padding:15px;background-color:var(--stage);background-image:radial-gradient(var(--dot) .7px,transparent .7px);background-size:16px 16px;display:flex;justify-content:center;align-items:stretch}#previewFrame{width:100%;height:100%;min-height:450px;border:0;border-radius:5px;background:#fff;box-shadow:0 10px 30px var(--shadow);transition:width .2s}#previewFrame.mobile{width:390px;max-width:100%}.drop-message{position:absolute;inset:15px;display:none;place-items:center;border:2px dashed #9c83ff;border-radius:8px;background:#7857f522;color:var(--drop-fg);font-size:13px;pointer-events:none}.preview-stage.dragging .drop-message{display:grid}.statusbar{height:25px;display:flex;align-items:center;gap:20px;padding:0 11px;background:var(--sb-bg);color:var(--sb-fg);font-size:9px}.statusbar span:first-child{color:var(--sb-green)}.statusbar span:last-child{margin-left:auto}
+/* 5. Editor de código. CodeMirror agrega resaltado y autocompletado. */
+.code-filebar,.code-statusbar{height:32px;flex:0 0 32px;display:flex;align-items:center;justify-content:space-between;padding:0 12px;background:var(--bar);color:var(--text3);font-size:10px}.code-filebar span:first-child{color:var(--text)}.CodeMirror{height:100%;flex:1;background:var(--surface);color:var(--text);font:12px/1.65 Consolas,monospace}.CodeMirror-gutters{background:var(--gutter);border-right:1px solid var(--line2)}.CodeMirror-linenumber{color:var(--text3)}.CodeMirror-cursor{border-left:1px solid var(--cursor)}.CodeMirror-selected{background:var(--sel)!important}.CodeMirror-hints{z-index:10000;background:var(--hint-bg);color:var(--text);border:1px solid var(--hint-line)}.CodeMirror-hint-active{background:#6952ce!important}.code-statusbar{border-top:1px solid var(--line);font-size:9px}
+/* 6. Inspector y biblioteca */
+.inspector{border-left:1px solid var(--line);padding:0 13px}.inspector-tabs{height:43px;display:flex;gap:15px;border-bottom:1px solid var(--line)}.inspector-tab{border:0;border-bottom:2px solid transparent;background:none;color:var(--text3);font-size:9px;font-weight:800;letter-spacing:.8px}.inspector-tab.active{color:var(--text-strong);border-bottom-color:var(--accent)}.inspector-content{padding:15px 1px}.inspector-welcome{text-align:center;margin:50px 8px 35px;color:var(--text2)}.welcome-icon{font-size:34px;color:var(--welcome-ic);margin-bottom:12px}.inspector-welcome b{font-size:12px}.inspector-welcome p{font-size:10px;line-height:1.7;color:var(--text3)}.guide-card{padding:13px;background:var(--note-bg);border:1px solid var(--note-line);border-radius:8px}.guide-card b{font-size:11px}.guide-card p{font-size:9px;color:var(--note-fg);margin:11px 0 0}.outline-btn{width:100%;margin-top:15px;background:transparent}.asset-heading{display:flex;align-items:center;justify-content:space-between;font-size:11px}.asset-heading button{background:var(--chip-bg);border:1px solid var(--chip-line);border-radius:5px;color:var(--chip-fg);padding:6px 8px;font-size:9px}.asset-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:15px}.asset-card{min-width:0;background:var(--btn);border:1px solid var(--line);border-radius:6px;overflow:hidden;cursor:grab}.asset-card img{width:100%;height:75px;object-fit:cover;display:block}.asset-card span{display:block;padding:6px;font-size:9px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--text2)}
+/* 7. Diálogo, avisos y responsive */
+.dialog{width:min(360px,calc(100% - 30px));background:var(--panel2);color:var(--text);border:1px solid var(--line2);border-radius:10px;padding:18px;box-shadow:0 20px 70px var(--shadow-lg)}.dialog::backdrop{background:var(--backdrop)}.dialog-title{font-size:14px;font-weight:700;margin-bottom:15px}.dialog-actions{display:flex;gap:8px;margin-top:18px}.dialog-actions button{flex:1}.toast{position:fixed;bottom:40px;left:50%;transform:translate(-50%,15px);opacity:0;pointer-events:none;background:#292f40;border:1px solid #4a536b;color:#fff;padding:10px 15px;border-radius:7px;font-size:11px;transition:.2s;z-index:100}.toast.show{opacity:1;transform:translate(-50%,0)}
+@media(max-width:1100px){.app-layout{grid-template-columns:205px minmax(350px,1fr)}.inspector{display:none}.blocks-panel{width:175px;flex-basis:175px}}@media(max-width:760px){.topbar{gap:8px;padding:0 8px}.brand{font-size:11px}.project-title{display:none}.top-btn{padding:7px;font-size:9px}.app-layout{grid-template-columns:1fr}.explorer{display:none}.blocks-panel{width:145px;flex-basis:145px;padding:12px 7px}.block-item{gap:5px}.block-item small{display:none}.toolbar-right{font-size:8px}.statusbar{gap:8px}}
+
+/* 10. Ajustes solicitados: paneles ocultables y eliminación de la barra redundante. */
+.tab-strip{display:none!important}
+.panel-title{padding-right:0}
+.panel-hide{width:22px;height:22px;display:inline-grid;place-items:center;border:0;border-radius:5px;background:transparent;color:var(--text3);font-size:18px;line-height:1;padding:0}
+.panel-hide:hover{background:var(--hover);color:var(--text-strong)}
+.blocks-heading{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
+.blocks-heading .section-label{margin:0}
+.inspector-tabs{position:relative;padding-left:0;padding-right:24px}
+.inspector-hide{position:absolute;right:0;top:9px}
+.panel-collapsed{display:none!important}
+.reopen-controls{position:fixed;z-index:50;left:8px;top:62px;display:flex;flex-direction:column;gap:5px;pointer-events:none}
+.reopen-controls button{display:none;pointer-events:auto;width:30px;height:30px;border:1px solid var(--line2);border-radius:6px;background:var(--btn);color:var(--chip-fg);box-shadow:0 3px 12px var(--shadow)}
+.reopen-controls button.visible{display:block}
+/* Código ocupa el área de trabajo central, inmediatamente debajo de Diseño/Código. */
+.workspace{position:relative}
+.code-area{flex:1;width:100%;min-width:0}
+.code-area.hidden{display:none!important}
+.code-area:not(.hidden){display:flex}
+@media(max-width:900px){.app-layout{grid-template-columns:190px minmax(300px,1fr)}.inspector{display:none}.inspector.panel-collapsed{display:none!important}}
+.app-layout.hide-explorer{grid-template-columns:0 minmax(400px,1fr) 245px}
+.app-layout.hide-inspector{grid-template-columns:235px minmax(400px,1fr) 0}
+.app-layout.hide-explorer.hide-inspector{grid-template-columns:0 minmax(400px,1fr) 0}
+
+/* 11. Corrección: al ocultar el explorador o las propiedades, el panel central conserva su columna. */
+.app-layout>.explorer{grid-column:1}
+.app-layout>.main-panel{grid-column:2}
+.app-layout>.inspector{grid-column:3}
+@media(max-width:760px){
+  .app-layout,.app-layout.hide-explorer,.app-layout.hide-inspector,.app-layout.hide-explorer.hide-inspector{grid-template-columns:1fr}
+  .app-layout>.main-panel{grid-column:1}
+}
+
+/* 12. Menú ••• de archivos y carpetas. */
+.tree-row .tree-actions{opacity:.55;padding:2px 6px;border-radius:4px;letter-spacing:1px;font-size:10px}
+.tree-row:hover .tree-actions,.tree-row .tree-actions:hover{opacity:1}
+.tree-row .tree-actions:hover{background:var(--hover);color:var(--text-strong)}
+.item-menu{position:fixed;z-index:200;min-width:160px;padding:5px;background:var(--panel2);border:1px solid var(--line2);border-radius:8px;box-shadow:0 12px 36px var(--shadow-lg);display:flex;flex-direction:column;gap:2px}
+.item-menu button{background:none;border:0;border-radius:5px;color:var(--text2);font-size:12px;text-align:left;padding:8px 10px;cursor:pointer}
+.item-menu button:hover{background:var(--hover);color:var(--text-strong)}
+.item-menu button.danger{color:var(--danger)}
+.item-menu button.danger:hover{background:var(--danger-bg);color:var(--danger-fg)}
+
+/* 13. Árbol estilo VS Code: flechas de carpeta, indentación y plegado. */
+.project-folder{cursor:pointer;user-select:none}
+.project-folder:hover{color:var(--text-strong)}
+.chev{width:14px;text-align:center;font-size:14px;line-height:1;color:var(--text3);flex:none}
+.folder-row{color:var(--text2)}
+.folder-row .folder-name{overflow:hidden;text-overflow:ellipsis}
+.file-row .file-icon{margin-left:0}
+.file-tree.tree-hidden{display:none}
+.tree-row{user-select:none}
+
+/* 14. Carpeta seleccionada (donde se crean los archivos nuevos). */
+.folder-row.selected{background:var(--hover);box-shadow:inset 0 0 0 1px #5a4bb8}
+
+/* 15. Inicio: todos los proyectos. */
+body.at-home .project-title,body.at-home .top-actions>*:not(#homeBtn):not(#newProjectBtn){display:none}
+body.at-home #homeBtn{display:none}
+.brand{cursor:pointer}
+.home-view{position:fixed;inset:54px 0 0 0;z-index:150;background:var(--bg);overflow:auto}
+.home-inner{max-width:1120px;margin:0 auto;padding:38px 26px 70px}
+.home-head{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;flex-wrap:wrap;margin-bottom:26px}
+.home-head h1{margin:0 0 5px;font-size:26px;letter-spacing:-.3px}.home-head p{margin:0;font-size:12px}
+.home-tools{display:flex;gap:10px;align-items:center}.home-tools .text-input{width:230px;padding:9px 11px}.home-tools .top-btn{padding:9px 14px;font-size:12px}
+.project-grid{display:grid;grid-template-columns:repeat(auto-fill,250px);gap:20px;justify-content:start}
+.project-card{width:250px;background:var(--panel);border:1px solid var(--line);border-radius:12px;overflow:hidden;cursor:pointer;color:var(--text);text-align:left;padding:0;transition:border-color .15s,transform .15s,box-shadow .15s}
+.project-card:hover,.project-card:focus-visible{border-color:#6b58d6;transform:translateY(-2px);box-shadow:0 10px 28px var(--shadow);outline:none}
+.thumb{position:relative;width:250px;height:156px;overflow:hidden;background:#fff;border-bottom:1px solid var(--line)}
+.thumb iframe{position:absolute;top:0;left:0;width:1200px;height:750px;border:0;transform:scale(.2083);transform-origin:top left;pointer-events:none;background:#fff}
+.thumb-empty{display:grid;place-items:center;height:100%;background:var(--panel2);color:var(--muted);font-size:11px}
+.card-info{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:11px 10px 12px 13px}
+.card-text{min-width:0;display:flex;flex-direction:column;gap:3px}.card-text b{font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.card-text small{color:var(--muted);font-size:10px}
+.card-dots{opacity:.7;flex:none;cursor:pointer;color:var(--text3)}.project-card:hover .card-dots{opacity:1}
+.new-card{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;height:230px;border-style:dashed;background:transparent}
+.new-card .plus{display:grid;place-items:center;width:46px;height:46px;border-radius:50%;background:var(--plus-bg);color:var(--plus-fg);font-size:24px;margin-bottom:4px}
+.new-card small{color:var(--muted);font-size:11px}
+.template-choice{display:flex;flex-direction:column;gap:8px;margin-top:14px}
+.template-choice label{display:flex;gap:10px;align-items:flex-start;padding:9px 10px;border:1px solid var(--line);border-radius:7px;cursor:pointer}
+.template-choice label:has(input:checked){border-color:#6b58d6;background:var(--sel-bg)}
+.template-choice b{display:block;font-size:12px}.template-choice small{display:block;color:var(--muted);font-size:10px;margin-top:2px}
+@media(max-width:760px){.home-inner{padding:24px 14px 60px}.home-tools{width:100%}.home-tools .text-input{flex:1;width:auto}.project-grid{grid-template-columns:repeat(auto-fill,minmax(150px,1fr))}.project-card,.thumb{width:auto}.thumb{height:110px}.thumb iframe{transform:scale(.14)}}
+body.at-home .top-actions{display:none}
+/* En Inicio no se ve ni se desplaza el editor que está detrás. */
+body.at-home{overflow:hidden}
+body.at-home .app-layout,body.at-home .reopen-controls{display:none!important}
+
+/* 16. Acceso (login / registro) y menú de cuenta. */
+.auth-view{display:none;position:fixed;inset:0;z-index:300;overflow:auto;background:radial-gradient(900px 500px at 15% 0%,var(--auth-1) 0%,transparent 60%),radial-gradient(800px 500px at 100% 100%,var(--auth-2) 0%,transparent 55%),var(--bg);padding:24px}
+body.logged-out .auth-view{display:grid;place-items:center}
+body.logged-out{overflow:hidden}
+body.logged-out .topbar,body.logged-out .app-layout,body.logged-out .home-view,body.logged-out .reopen-controls{display:none!important}
+.auth-card{width:min(400px,100%);background:var(--panel-a);border:1px solid var(--line);border-radius:16px;padding:28px 26px 22px;box-shadow:0 24px 80px var(--shadow-lg)}
+.auth-brand{display:flex;align-items:center;gap:9px;font-weight:700;margin-bottom:20px}
+.auth-card h1{margin:0 0 4px;font-size:22px;letter-spacing:-.2px}.auth-card p.muted{margin:0 0 18px;font-size:12px}
+.auth-tabs{display:flex;background:var(--surface);border:1px solid var(--line);border-radius:9px;padding:3px;margin-bottom:4px}
+.auth-tab{flex:1;border:0;background:none;border-radius:6px;padding:8px;font-size:12px;color:var(--muted)}
+.auth-tab.active{background:var(--tab-on-bg);color:var(--tab-on-fg)}
+.auth-card .text-input{padding:10px 11px;font-size:13px}.auth-card .field-label{margin:14px 0 6px}
+.pw-wrap{position:relative}.pw-wrap .text-input{padding-right:70px}
+.pw-toggle{position:absolute;right:6px;top:50%;transform:translateY(-50%);border:0;background:none;color:var(--plus-fg);font-size:11px;padding:5px 7px}
+.remember{display:flex;align-items:center;gap:8px;margin-top:14px;color:var(--text3);font-size:12px;cursor:pointer}
+.auth-error{min-height:18px;margin:12px 0 0;color:var(--danger);font-size:12px}
+.auth-submit{width:100%;padding:11px;font-size:13px;margin-top:6px}
+.auth-note{margin:16px 0 0;text-align:center;color:var(--muted);font-size:10px}
+.user-chip{display:flex;align-items:center}
+body.at-home .user-chip{margin-left:auto}
+.top-actions{margin-left:auto}body.at-home .top-actions+.user-chip{margin-left:auto}
+.user-btn{display:flex;align-items:center;gap:7px;padding:5px 10px 5px 5px;font-size:11px}
+.avatar{display:grid;place-items:center;width:22px;height:22px;border-radius:50%;background:#7857f5;color:#fff;font-weight:700;font-size:11px}
+#userName{max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.menu-label{padding:8px 10px 9px;border-bottom:1px solid var(--line2);margin-bottom:4px;display:flex;flex-direction:column;gap:2px;max-width:220px}
+.menu-label b{font-size:12px}.menu-label small{color:var(--muted);font-size:10px;overflow:hidden;text-overflow:ellipsis}
+@media(max-width:760px){#userName{display:none}}
+
+/* 17. ELEMENTOS vive debajo del EXPLORADOR, dentro de la misma columna izquierda. */
+.explorer .blocks-panel{width:auto;flex:none;padding:14px 3px 8px;margin-top:14px;background:transparent;border-right:0;border-top:1px solid var(--line);overflow:visible}
+.explorer .blocks-heading .section-label{font-size:10px;font-weight:800;letter-spacing:1.2px;color:var(--text3)}
+.explorer .blocks-panel .muted.small{margin:0 0 4px}
+.explorer-show-blocks{display:none;width:100%;margin-top:14px;padding:10px 4px;border:0;border-top:1px solid var(--line);background:none;align-items:center;justify-content:space-between;color:var(--text3);font-size:10px;font-weight:800;letter-spacing:1.2px;text-align:left}
+.explorer-show-blocks em{font-style:normal;font-weight:400;letter-spacing:0;color:var(--link)}
+.explorer-show-blocks.visible{display:flex}
+.reopen-controls [data-show="blocks"]{display:none!important}
+.file-tree{max-height:36vh;overflow-y:auto}
+@media(max-width:760px){
+  .app-layout{grid-template-rows:auto minmax(0,1fr)}
+  .app-layout>.explorer{display:block;grid-column:1;grid-row:1;max-height:38vh;border-right:0;border-bottom:1px solid var(--line)}
+  .app-layout>.main-panel{grid-row:2}
+}
+body.dragging-item #previewFrame{pointer-events:none}
+
+/* 18. Iconos Lucide (SVG incrustados). Heredan el color del texto (currentColor). */
+.ic{display:inline-flex;align-items:center;justify-content:center;width:14px;height:14px;flex:none;line-height:0}
+.ic svg{width:100%;height:100%;display:block}
+.chev svg,.file-icon svg,.tree-actions svg,.item-menu svg,.plus svg,.pw-toggle svg{display:block;flex:none}
+.top-btn{display:inline-flex;align-items:center;justify-content:center;gap:6px}
+.top-btn .ic{width:14px;height:14px}
+.mini-actions{align-items:center}
+.mini-actions button{display:inline-grid;place-items:center;width:24px;height:24px;padding:0;border-radius:5px}
+.mini-actions button:hover{background:var(--hover)}
+.mini-actions .ic{width:15px;height:15px}
+.panel-hide .ic{width:14px;height:14px}
+.chev{display:inline-flex;align-items:center;justify-content:center;width:16px;height:16px}
+.chev svg{width:14px;height:14px}
+.file-icon{display:inline-flex;align-items:center;justify-content:center;width:16px;height:16px;flex:none}
+.file-icon svg{width:15px;height:15px}
+.folder-ico{color:var(--text3)}
+.fi-html{color:#ff9b57}.fi-css{color:#5aa9ff}.fi-js{color:#f2cf4d}.fi-json{color:#e6b85c}.fi-md{color:#7fd1ff}.fi-img{color:#58d6a4}.fi-txt{color:var(--text3)}
+.tree-row .tree-actions{display:inline-flex;align-items:center;letter-spacing:0}
+.tree-actions svg{width:15px;height:15px}
+.item-menu button{display:flex;align-items:center;gap:9px}
+.item-menu svg{width:14px;height:14px}
+.block-symbol .ic{width:15px;height:15px}
+.block-item em{display:inline-flex}
+.block-item em .ic{width:13px;height:13px}
+.mode{display:inline-flex;align-items:center;gap:6px}
+.mode .ic{width:13px;height:13px}
+.toolbar-right button{display:inline-grid;place-items:center;width:26px;height:24px;padding:0}
+.toolbar-right button .ic{width:13px;height:13px}
+.device{display:inline-grid;place-items:center;padding:5px 9px}
+.device .ic{width:15px;height:15px}
+.welcome-icon{display:flex;justify-content:center}
+.welcome-icon .ic{width:36px;height:36px}
+.asset-heading button{display:inline-flex;align-items:center;gap:5px}
+.asset-heading button .ic{width:12px;height:12px}
+.reopen-controls button.visible{display:grid;place-items:center}
+.reopen-controls .ic{width:15px;height:15px}
+.explorer-show-blocks{gap:8px}
+.explorer-show-blocks.visible{align-items:center}
+.explorer-show-blocks em{margin-left:auto}
+.explorer-show-blocks .ic{width:14px;height:14px}
+.new-card .plus .ic,.new-card .plus svg{width:24px;height:24px}
+.pw-toggle{display:inline-grid;place-items:center;width:30px;height:28px;padding:0;color:var(--text3)}
+.pw-toggle:hover{color:var(--text-strong)}
+.pw-toggle .ic{width:16px;height:16px}
+.user-btn .ic{width:12px;height:12px;color:var(--text3)}
+.search-wrap{position:relative;display:inline-flex;align-items:center}
+.search-wrap>.ic{position:absolute;left:10px;width:14px;height:14px;color:var(--muted);pointer-events:none}
+.search-wrap .text-input{padding-left:32px}
+@media(max-width:760px){.top-btn .ic{width:12px;height:12px}}
+
+/* Botones para reabrir paneles: esquina inferior izquierda, sin tapar la barra de herramientas. */
+.reopen-controls{top:auto;bottom:40px;left:10px;flex-direction:row}
+
+/* Ajustes del proyecto y conexiones automáticas. */
+.setting-card{padding:14px;margin:12px 0;border:1px solid var(--line);border-radius:10px;background:var(--panel-soft,rgba(255,255,255,.025))}
+.setting-row{display:flex;align-items:center;justify-content:space-between;gap:14px;cursor:pointer}
+.setting-row span{display:flex;flex-direction:column;gap:6px}
+.setting-row small{color:var(--muted);line-height:1.5;font-size:12px}
+.setting-row input{width:18px;height:18px;accent-color:var(--accent);flex:none}
+
+/* 19. Tema claro: colores de iconos y bloques que necesitan tonos más oscuros sobre fondo blanco. */
+html[data-theme="light"] .fi-html{color:#e0651a}
+html[data-theme="light"] .fi-css{color:#2674d9}
+html[data-theme="light"] .fi-js{color:#b08a00}
+html[data-theme="light"] .fi-json{color:#b8860b}
+html[data-theme="light"] .fi-md{color:#1a8fc4}
+html[data-theme="light"] .fi-img{color:#1c9a6c}
+html[data-theme="light"] .fi-txt{color:#6b7490}
+html[data-theme="light"] .file-icon{color:#5b6cf0}
+html[data-theme="light"] .folder-icon{color:#b07d1c}
+html[data-theme="light"] .violet{color:#5b3fd0}
+html[data-theme="light"] .blue{color:#1f78b4}
+html[data-theme="light"] .orange{color:#b86a00}
+html[data-theme="light"] .green{color:#14805c}
+html[data-theme="light"] .pink{color:#c23f84}
+html[data-theme="light"] .cyan{color:#0f8a99}
+html[data-theme="light"] .project-card:hover,html[data-theme="light"] .project-card:focus-visible{border-color:#8a76e6}
+html[data-theme="light"] .item-menu,html[data-theme="light"] .dialog{box-shadow:0 12px 36px var(--shadow-lg)}
+html[data-theme="light"] .CodeMirror{background:var(--surface);color:var(--text)}
+html[data-theme="light"] .CodeMirror-selected{background:var(--sel)!important}
+html[data-theme="light"] .CodeMirror-hint{color:var(--text)}
+html[data-theme="light"] .CodeMirror-hint-active{color:#fff}
+
+/* 20. Ajustes (se abren desde el botón de usuario) y selector de tema. */
+.settings-dialog{width:min(430px,calc(100% - 30px))}
+.settings-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px}
+.settings-head .dialog-title{margin:0}
+.settings-dialog .section-label{margin:18px 0 8px}
+.theme-choice{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.theme-opt{display:flex;flex-direction:column;align-items:center;gap:7px;padding:12px 6px;border:1px solid var(--line);border-radius:9px;background:var(--surface);color:var(--text2);font-size:12px}
+.theme-opt .ic{width:18px;height:18px}
+.theme-opt:hover{border-color:#7860d9;color:var(--text-strong)}
+.theme-opt.active{border-color:var(--accent);background:var(--sel-bg);color:var(--text-strong);box-shadow:0 0 0 1px var(--accent) inset}
+.theme-opt:focus-visible,.item-menu button:focus-visible,.panel-hide:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.setting-row input:disabled{cursor:not-allowed;opacity:.5}
+.setting-card:has(input:disabled) .setting-row{cursor:not-allowed}
+/* Sin internet (CodeMirror no carga) el editor es un área de texto: que ocupe el espacio y siga el tema. */
+#codeEditor{flex:1;width:100%;min-height:0;resize:none;border:0;outline:none;padding:12px;background:var(--surface);color:var(--text);font:12px/1.65 Consolas,monospace;tab-size:2}
+
+/* 21. Recuperar contraseña. */
+.link-btn{display:block;margin:12px 0 0;padding:2px 0;border:0;background:none;color:var(--link);font-size:12px;text-align:left}
+.link-btn:hover{text-decoration:underline}
+.auth-submit+.link-btn{margin:14px auto 0;text-align:center}
+.code-input{letter-spacing:2px;text-transform:uppercase;font-family:Consolas,monospace}
+.recovery-code{margin:14px 0 4px;padding:14px;text-align:center;border:1px dashed var(--line2);border-radius:9px;background:var(--surface);color:var(--text-strong);font:700 20px/1.2 Consolas,monospace;letter-spacing:3px;user-select:all}
+
+/* 22. Publicidad en Inicio. */
+.ad-banner{position:relative;display:flex;align-items:center;gap:14px;min-height:84px;margin:0 0 24px;padding:16px 18px 24px;border:1px solid var(--line);border-radius:12px;background:linear-gradient(90deg,var(--note-bg),var(--panel))}
+.ad-tag{position:absolute;top:7px;right:12px;font-size:9px;font-weight:800;letter-spacing:1.2px;color:var(--text3);text-transform:uppercase}
+.ad-icon{flex:none;display:grid;place-items:center;width:42px;height:42px;border-radius:10px;background:var(--plus-bg);color:var(--plus-fg)}
+.ad-icon .ic{width:20px;height:20px}
+.ad-text{min-width:0;flex:1;display:flex;flex-direction:column;gap:3px}
+.ad-text b{font-size:14px;color:var(--text-strong)}
+.ad-text span{font-size:12px;color:var(--text2);line-height:1.45}
+.ad-cta{flex:none;padding:8px 13px;border:1px solid var(--accent);border-radius:7px;background:var(--accent);color:#fff;font-size:12px;text-decoration:none;white-space:nowrap}
+a.ad-cta:hover{filter:brightness(1.1)}
+span.ad-cta{background:transparent;color:var(--link);border-color:var(--line2)}
+.ad-dots{position:absolute;left:18px;bottom:8px;display:flex;gap:6px}
+.ad-dots button{width:16px;height:6px;padding:0;border:0;border-radius:3px;background:var(--line2)}
+.ad-dots button.active{background:var(--accent)}
+@media(max-width:760px){.ad-banner{flex-wrap:wrap}.ad-cta{margin-left:56px}}

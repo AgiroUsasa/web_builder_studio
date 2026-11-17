@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>WebBuilder Studio</title>
+  <script>try{var c=localStorage.getItem("wb_theme"),l=c==="light"||(c==="system"&&matchMedia("(prefers-color-scheme: light)").matches);document.documentElement.setAttribute("data-theme",l?"light":"dark")}catch(e){document.documentElement.setAttribute("data-theme","dark")}</script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/theme/dracula.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/theme/eclipse.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/hint/show-hint.min.css">
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body class="at-home logged-out">
+  <!-- ACCESO: iniciar sesión o crear cuenta (las cuentas se guardan en este navegador). -->
+  <section id="authView" class="auth-view" aria-label="Acceso">
+    <div class="auth-card">
+      <div class="auth-brand"><span class="brand-icon">W</span><span>WebBuilder <b>Studio</b></span></div>
+      <h1 id="authTitle">Bienvenido de nuevo</h1>
+      <p class="muted" id="authLead">Ingresá para ver tus proyectos.</p>
+      <div class="auth-tabs" id="authTabs" role="tablist"><button type="button" class="auth-tab active" data-auth="login" role="tab">Iniciar sesión</button><button type="button" class="auth-tab" data-auth="register" role="tab">Crear cuenta</button></div>
+      <form id="authForm" novalidate>
+        <div id="authNameRow" class="hidden"><label class="field-label" for="authName">Nombre</label><input id="authName" class="text-input" autocomplete="name" maxlength="40" placeholder="Tu nombre"></div>
+        <label class="field-label" for="authEmail">Correo electrónico</label>
+        <input id="authEmail" class="text-input" type="email" autocomplete="username" placeholder="tu@correo.com" required>
+        <div id="authCodeRow" class="hidden"><label class="field-label" for="authCode">Código de recuperación</label><input id="authCode" class="text-input code-input" autocomplete="off" spellcheck="false" maxlength="14" placeholder="XXXX-XXXX-XXXX"></div>
+        <label class="field-label" for="authPassword" id="authPwLabel">Contraseña</label>
+        <div class="pw-wrap"><input id="authPassword" class="text-input" type="password" autocomplete="current-password" placeholder="Mínimo 8 caracteres" required><button type="button" id="togglePw" class="pw-toggle" aria-label="Mostrar contraseña"><i data-icon="eye"></i></button></div>
+        <div id="authConfirmRow" class="hidden"><label class="field-label" for="authConfirm">Repetir contraseña</label><input id="authConfirm" class="text-input" type="password" autocomplete="new-password" placeholder="Repetí la contraseña"></div>
+        <label class="remember" id="authRememberRow"><input type="checkbox" id="authRemember" checked> Mantener la sesión iniciada</label>
+        <button type="button" id="forgotBtn" class="link-btn">¿Olvidaste tu contraseña?</button>
+        <p id="authError" class="auth-error" role="alert" aria-live="polite"></p>
+        <button class="top-btn primary auth-submit" id="authSubmit" type="submit">Iniciar sesión</button>
+        <button type="button" id="backLoginBtn" class="link-btn hidden">← Volver a iniciar sesión</button>
+      </form>
+      <p class="auth-note">Tu cuenta y tus proyectos se guardan solo en este navegador. No enviamos correos: para recuperar la contraseña se usa el código que te damos al crear la cuenta.</p>
+    </div>
+  </section>
+
+  <!-- BLOQUE 1: BARRA SUPERIOR. Acciones generales del proyecto. -->
+  <header class="topbar">
+    <div class="brand" id="brandHome" title="Ir al inicio" role="button" tabindex="0"><span class="brand-icon">W</span><span>WebBuilder <b>Studio</b></span></div>
+    <div class="project-title"><i></i><span id="projectNameLabel">Mi proyecto</span></div>
+    <div class="top-actions">
+      <button class="top-btn" id="homeBtn" title="Ver todos mis proyectos"><i data-icon="house"></i>Inicio</button>
+      <button class="top-btn" id="newProjectBtn"><i data-icon="plus"></i>Nuevo</button>
+      <button class="top-btn" id="saveBtn"><i data-icon="save"></i>Guardar</button>
+      <button class="top-btn" id="exportHtmlBtn"><i data-icon="file-down"></i>Exportar página</button>
+      <button class="top-btn primary" id="exportZipBtn"><i data-icon="download"></i>Exportar ZIP</button>
+    </div>
+    <div class="user-chip" id="userChip"><button class="top-btn user-btn" id="userBtn" aria-haspopup="menu" title="Mi cuenta"><span class="avatar" id="userAvatar">?</span><span id="userName">Cuenta</span><i data-icon="chevron-down"></i></button></div>
+  </header>
+
+  <!-- INICIO: todos los proyectos guardados en este navegador. -->
+  <section id="homeView" class="home-view" aria-label="Inicio">
+    <div class="home-inner">
+      <div class="home-head">
+        <div><h1>Tus proyectos</h1><p class="muted" id="homeSubtitle"></p></div>
+        <div class="home-tools">
+          <span class="search-wrap"><i data-icon="search"></i><input id="homeSearch" class="text-input" type="search" placeholder="Buscar proyecto…" aria-label="Buscar proyecto"></span>
+          <button class="top-btn primary" id="homeNewBtn"><i data-icon="plus"></i>Nuevo proyecto</button>
+        </div>
+      </div>
+      <aside id="adBanner" class="ad-banner hidden" aria-label="Publicidad"></aside>
+      <div id="projectGrid" class="project-grid"></div>
+    </div>
+  </section>
+
+  <!-- BLOQUE 2: ESTRUCTURA PRINCIPAL DEL ENTORNO. -->
+  <main class="app-layout">
+    <!-- EXPLORADOR: páginas, archivos, carpetas y recursos. -->
+    <aside class="explorer panel">
+      <div class="panel-title"><span>EXPLORADOR</span><div class="mini-actions"><button class="panel-hide" data-hide="explorer" title="Ocultar explorador" aria-label="Ocultar explorador"><i data-icon="x"></i></button><button id="newFileBtn" title="Agregar lenguaje o archivo" aria-label="Agregar lenguaje o archivo"><i data-icon="file-plus"></i></button><button id="newFolderBtn" title="Nueva carpeta" aria-label="Nueva carpeta"><i data-icon="folder-plus"></i></button><button id="uploadAssetBtn" title="Importar imagen" aria-label="Importar imagen"><i data-icon="image-plus"></i></button></div></div>
+      <div class="project-folder"><span id="treeChevron" class="chev"><i data-icon="chevron-down"></i></span><b id="treeProjectName">MI_PROYECTO</b></div>
+      <div id="fileTree" class="file-tree"></div>
+      <div class="explorer-bottom"><span>RECURSOS</span><button id="openAssetsBtn">Ver imágenes</button></div>
+      <button class="explorer-show-blocks" data-show="blocks" title="Mostrar elementos"><i data-icon="blocks"></i><span>ELEMENTOS</span> <em>Mostrar</em></button>
+      <!-- PANEL DE BLOQUES: cada elemento se puede arrastrar al lienzo. -->
+      <aside class="blocks-panel">
+        <div class="blocks-heading"><div class="section-label">ELEMENTOS</div><button class="panel-hide" data-hide="blocks" title="Ocultar elementos" aria-label="Ocultar elementos"><i data-icon="x"></i></button></div>
+        <p class="muted small">Arrastrá un bloque al lienzo o hacé clic para agregarlo.</p>
+        <div class="block-list">
+          <button class="block-item" draggable="true" data-block="hero"><span class="block-symbol violet"><i data-icon="panel-top"></i></span><span><b>Portada</b><small>Título y presentación</small></span><em><i data-icon="plus"></i></em></button>
+          <button class="block-item" draggable="true" data-block="text"><span class="block-symbol blue"><i data-icon="type"></i></span><span><b>Texto</b><small>Contenido y párrafos</small></span><em><i data-icon="plus"></i></em></button>
+          <button class="block-item" draggable="true" data-block="cards"><span class="block-symbol orange"><i data-icon="layout-grid"></i></span><span><b>Tarjetas</b><small>Servicios o productos</small></span><em><i data-icon="plus"></i></em></button>
+          <button class="block-item" draggable="true" data-block="image"><span class="block-symbol green"><i data-icon="image"></i></span><span><b>Imagen</b><small>Fotografía o gráfico</small></span><em><i data-icon="plus"></i></em></button>
+          <button class="block-item" draggable="true" data-block="button"><span class="block-symbol pink"><i data-icon="pointer"></i></span><span><b>Botón</b><small>Enlace de acción</small></span><em><i data-icon="plus"></i></em></button>
+          <button class="block-item" draggable="true" data-block="contact"><span class="block-symbol cyan"><i data-icon="mail"></i></span><span><b>Contacto</b><small>Datos y contacto</small></span><em><i data-icon="plus"></i></em></button>
+        </div>
+        <div class="panel-separator"></div>
+        <div class="section-label">CONFIGURACIÓN</div>
+        <label class="field-label" for="siteTitle">Nombre de la página</label><input id="siteTitle" class="text-input" value="Mi sitio web">
+        <label class="field-label" for="accentColor">Color principal</label><input id="accentColor" class="color-input" type="color" value="#7857f5">
+        <div class="hint-box">Los bloques se convierten en HTML editable. Podés modificar todo desde el editor de código.</div>
+      </aside>
+    </aside>
+
+    <!-- ZONA CENTRAL: pestañas, editor y vista previa. -->
+    <section class="main-panel">
+      <div class="toolbar">
+        <div class="mode-switch"><button class="mode active" data-mode="visual"><i data-icon="palette"></i>Diseño</button><button class="mode" data-mode="code"><i data-icon="code"></i>Código</button></div>
+        <div class="toolbar-right"><span class="live-dot"></span><span>VISTA EN VIVO</span><button id="refreshPreview" title="Actualizar vista previa" aria-label="Actualizar vista previa"><i data-icon="refresh"></i></button></div>
+      </div>
+      <div class="workspace">
+
+
+        <!-- LIENZO VISUAL: recibe bloques mediante arrastrar y soltar. -->
+        <section class="canvas-area" id="canvasArea">
+          <div class="canvas-heading"><div><b id="canvasPageName">index.html</b><small>Vista previa del sitio</small></div><div class="device-tools"><button class="device active" data-device="desktop" title="Escritorio" aria-label="Vista de escritorio"><i data-icon="monitor"></i></button><button class="device" data-device="mobile" title="Celular" aria-label="Vista de celular"><i data-icon="smartphone"></i></button></div></div>
+          <div class="preview-stage" id="previewStage"><iframe id="previewFrame" title="Vista previa de la página"></iframe><div class="drop-message" id="dropMessage">Soltá un elemento acá para agregarlo</div></div>
+        </section>
+
+        <!-- EDITOR DE CÓDIGO: archivos HTML, CSS y JavaScript. -->
+        <section class="code-area hidden" id="codeArea">
+          <div class="code-filebar"><span id="codeFileLabel">index.html</span><span id="codeStatus">Guardado</span></div>
+          <textarea id="codeEditor" spellcheck="false" aria-label="Editor de código"></textarea>
+          <div class="code-statusbar"><span id="languageLabel">HTML</span><span>Autocompletado · Comentarios · Colores de sintaxis</span><span id="lineInfo">Línea 1</span></div>
+        </section>
+      </div>
+      <footer class="statusbar"><span><i></i> Listo</span><span id="fileCount">4 archivos</span><span id="blockCount">0 bloques</span><span>WebBuilder Studio</span></footer>
+    </section>
+
+    <!-- INSPECTOR: propiedades y biblioteca de imágenes. -->
+    <aside class="inspector panel">
+      <div class="inspector-tabs"><button class="panel-hide inspector-hide" data-hide="inspector" title="Ocultar propiedades" aria-label="Ocultar propiedades"><i data-icon="x"></i></button><button class="inspector-tab active" data-inspector="properties">PROPIEDADES</button><button class="inspector-tab" data-inspector="assets">IMÁGENES</button></div>
+      <div id="propertiesPanel" class="inspector-content">
+        <div class="inspector-welcome"><div class="welcome-icon"><i data-icon="layout-template"></i></div><b>Tu espacio de trabajo</b><p>Seleccioná un bloque en la vista previa o agregá elementos desde el panel izquierdo.</p></div>
+        <div class="guide-card"><b>Cómo empezar</b><p>01 · Creá páginas desde el explorador.</p><p>02 · Arrastrá bloques al lienzo.</p><p>03 · Editá HTML, CSS y JS.</p><p>04 · Exportá el proyecto completo.</p></div>
+        <button class="outline-btn" id="resetExampleBtn">Restablecer ejemplo</button>
+      </div>
+      <div id="assetsPanel" class="inspector-content hidden"><div class="asset-heading"><b>Biblioteca de imágenes</b><button id="addAssetBtn"><i data-icon="upload"></i>Importar</button></div><p class="muted small">Arrastrá una imagen al lienzo o insertala en el código.</p><div id="assetGrid" class="asset-grid"></div></div>
+    </aside>
+  </main>
+
+  <div class="reopen-controls"><button data-show="explorer" title="Mostrar explorador" aria-label="Mostrar explorador"><i data-icon="files"></i></button><button data-show="blocks" title="Mostrar elementos" aria-label="Mostrar elementos"><i data-icon="blocks"></i></button><button data-show="inspector" title="Mostrar propiedades" aria-label="Mostrar propiedades"><i data-icon="sliders"></i></button></div>
+
+  <!-- BLOQUE 3: VENTANA DE DIÁLOGO PARA CREAR ARCHIVOS Y CARPETAS. -->
+  <dialog id="createDialog" class="dialog"><form method="dialog" id="createForm"><div class="dialog-title" id="dialogTitle">Crear página</div><div id="newFileTypeRow"><label class="field-label" for="newFileType">Tipo de lenguaje o archivo</label><select id="newFileType" class="text-input"><option value="html">HTML</option><option value="css">CSS</option><option value="js">JavaScript / Node.js</option><option value="jsx">React (JSX)</option><option value="tsx">React (TSX)</option><option value="php">PHP</option><option value="py">Python</option><option value="java">Java</option><option value="cs">C#</option><option value="cpp">C++</option><option value="json">JSON</option><option value="md">Markdown</option><option value="txt">Texto</option></select></div><label class="field-label" for="newItemName">Nombre del archivo</label><input id="newItemName" class="text-input" placeholder="archivo" required><div class="dialog-actions"><button class="outline-btn" id="cancelCreateBtn" type="button">Cancelar</button><button class="top-btn primary" id="confirmCreateBtn" type="submit">Crear</button></div></form></dialog>
+  <dialog id="projectDialog" class="dialog"><form method="dialog" id="projectForm"><div class="dialog-title" id="projectDialogTitle">Nuevo proyecto</div><label class="field-label" for="projectNameInput">Nombre del proyecto</label><input id="projectNameInput" class="text-input" maxlength="60" placeholder="Mi sitio web" required>
+    <div id="templateChoice" class="template-choice"><label><input type="radio" name="projectTemplate" value="blank" checked><span><b>En blanco</b><small>Una página con la estructura HTML base</small></span></label><label><input type="radio" name="projectTemplate" value="example"><span><b>Con ejemplo</b><small>Portada, tarjetas y estilos de muestra</small></span></label></div>
+    <div class="dialog-actions"><button class="outline-btn" id="cancelProjectBtn" type="button">Cancelar</button><button class="top-btn primary" id="confirmProjectBtn" type="submit">Crear</button></div></form></dialog>
+  <!-- AJUSTES: se abren desde el botón de usuario (arriba a la derecha). -->
+  <dialog id="settingsDialog" class="dialog settings-dialog" aria-labelledby="settingsTitle">
+    <div class="settings-head"><div class="dialog-title" id="settingsTitle">Ajustes</div><button type="button" class="panel-hide" id="closeSettingsBtn" title="Cerrar" aria-label="Cerrar ajustes"><i data-icon="x"></i></button></div>
+    <div class="section-label">APARIENCIA</div>
+    <div class="theme-choice" role="radiogroup" aria-label="Tema de la aplicación">
+      <button type="button" class="theme-opt" role="radio" aria-checked="false" data-theme-choice="light"><i data-icon="sun"></i><span>Claro</span></button>
+      <button type="button" class="theme-opt" role="radio" aria-checked="false" data-theme-choice="dark"><i data-icon="moon"></i><span>Oscuro</span></button>
+      <button type="button" class="theme-opt" role="radio" aria-checked="false" data-theme-choice="system"><i data-icon="monitor"></i><span>Sistema</span></button>
+    </div>
+    <div class="section-label">CUENTA</div>
+    <div class="setting-card">
+      <div class="setting-row" style="cursor:default"><span><b>Código de recuperación</b><small>Sirve para cambiar tu contraseña si la olvidás. Al generar uno nuevo, el anterior deja de funcionar.</small></span></div>
+      <button type="button" class="outline-btn" id="newRecoveryBtn">Generar código nuevo</button>
+    </div>
+    <div class="section-label">PROYECTO ACTUAL</div>
+    <div class="setting-card">
+      <label class="setting-row" for="autoConnectionsToggle">
+        <span><b>Conexiones automáticas</b><small>Vincular automáticamente los archivos CSS y JavaScript con las páginas HTML.</small></span>
+        <input id="autoConnectionsToggle" type="checkbox" checked>
+      </label>
+      <p class="small muted" id="autoConnectionsStatus">Activado: los nuevos archivos CSS y JavaScript se conectan a las páginas HTML.</p>
+    </div>
+    <p class="small muted">Si desactivás esta opción, WebBuilder Studio quitará las conexiones automáticas que haya agregado. Podés escribir tus propias etiquetas link y script en el HTML.</p>
+  </dialog>
+  <dialog id="recoveryDialog" class="dialog" aria-labelledby="recoveryTitle">
+    <div class="dialog-title" id="recoveryTitle">Tu código de recuperación</div>
+    <p class="small muted" id="recoveryLead"></p>
+    <div class="recovery-code" id="recoveryCode" aria-live="polite"></div>
+    <div class="dialog-actions"><button class="outline-btn" id="copyRecoveryBtn" type="button">Copiar</button><button class="top-btn primary" id="doneRecoveryBtn" type="button">Ya lo guardé</button></div>
+  </dialog>
+  <input id="assetInput" type="file" accept="image/*" multiple hidden>
+  <div class="toast" id="toast" role="status"></div>
+
+  <!-- CodeMirror agrega resaltado de sintaxis y autocompletado. Si no hay internet, queda el textarea funcional. -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/xml/xml.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/javascript/javascript.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/css/css.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/htmlmixed/htmlmixed.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/php/php.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/python/python.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/clike/clike.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/hint/show-hint.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/hint/anyword-hint.min.js"></script>
+  <script src="js/icons.js"></script>
+  <script src="js/ads.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
