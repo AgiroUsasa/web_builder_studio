@@ -2,7 +2,13 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#0f1117">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="WebBuilder">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
   <title>WebBuilder Studio</title>
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><defs><linearGradient id='g' x1='0' y1='0' x2='1' y2='1'><stop offset='0' stop-color='%238c69ff'/><stop offset='1' stop-color='%235534cb'/></linearGradient></defs><rect width='64' height='64' rx='16' fill='url(%23g)'/><text x='32' y='47' text-anchor='middle' font-family='Inter,Segoe UI,Arial,sans-serif' font-weight='900' font-size='42' fill='%23fff'>W</text></svg>">
   <script>try{var c=localStorage.getItem("wb_theme"),l=c==="light"||(c==="system"&&matchMedia("(prefers-color-scheme: light)").matches);document.documentElement.setAttribute("data-theme",l?"light":"dark")}catch(e){document.documentElement.setAttribute("data-theme","dark")}</script>
@@ -132,6 +138,13 @@
       <div id="assetsPanel" class="inspector-content hidden"><div class="asset-heading"><b>Biblioteca de imágenes</b><button id="addAssetBtn"><i data-icon="upload"></i>Importar</button></div><p class="muted small">Arrastrá una imagen al lienzo o insertala en el código.</p><div id="assetGrid" class="asset-grid"></div></div>
     </aside>
   </main>
+
+  <!-- NAVEGACIÓN MÓVIL: en pantallas chicas se muestra un panel por vez. -->
+  <nav class="mobile-nav" id="mobileNav" aria-label="Secciones del editor">
+    <button type="button" data-mtab="files"><i data-icon="files"></i><span>Archivos</span></button>
+    <button type="button" data-mtab="main" class="active"><i data-icon="palette"></i><span>Editor</span></button>
+    <button type="button" data-mtab="props"><i data-icon="sliders"></i><span>Propiedades</span></button>
+  </nav>
 
   <div class="reopen-controls"><button data-show="explorer" title="Mostrar explorador" aria-label="Mostrar explorador"><i data-icon="files"></i></button><button data-show="blocks" title="Mostrar elementos" aria-label="Mostrar elementos"><i data-icon="blocks"></i></button><button data-show="inspector" title="Mostrar propiedades" aria-label="Mostrar propiedades"><i data-icon="sliders"></i></button></div>
 

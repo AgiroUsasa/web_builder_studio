@@ -693,6 +693,7 @@ async function detectServer(){
     sb=window.supabase.createClient(c.supabaseUrl,c.supabaseAnonKey,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
     backend="supabase";serverMode=true;
     sb.auth.onAuthStateChange(ev=>{if(ev==="PASSWORD_RECOVERY")askNewPassword();});
+    {const n=document.querySelector(".auth-note");if(n)n.textContent="Tu cuenta y tus proyectos se guardan en la nube: ingresá con el mismo correo desde cualquier dispositivo. Si olvidás la contraseña, te enviamos un enlace por correo.";}
     {const card=$("#recoveryRow").parentElement;card.classList.add("hidden");if(card.previousElementSibling)card.previousElementSibling.classList.add("hidden");}
     return;
   }
@@ -967,3 +968,28 @@ async function startAuth() {
 $("#projectNameLabel").textContent=project.name;$("#treeProjectName").textContent=project.name.toUpperCase().replace(/\s+/g,"_");$("#siteTitle").value=project.title;$("#accentColor").value=project.accent;renderTree();renderAssets();renderTabs();initEditor();applyTheme();renderPreview();startAuth();
 /* Mientras se arrastra un bloque o una imagen, el iframe no captura el arrastre: así el lienzo recibe el drop. */
 ["dragend","drop"].forEach(ev=>document.addEventListener(ev,()=>document.body.classList.remove("dragging-item"),true));
+
+/* MÓVIL: pestañas inferiores (Archivos · Editor · Propiedades) y ajustes táctiles. */
+(function(){
+  const mq=matchMedia("(max-width:900px)");
+  function setMTab(name){
+    ["files","main","props"].forEach(n=>document.body.classList.toggle("m-"+n,n===name));
+    document.querySelectorAll("#mobileNav button").forEach(b=>b.classList.toggle("active",b.dataset.mtab===name));
+  }
+  setMTab("main");
+  document.querySelectorAll("#mobileNav button").forEach(b=>b.addEventListener("click",()=>setMTab(b.dataset.mtab)));
+  /* Al abrir un archivo o agregar un bloque, volver al editor. */
+  $("#fileTree").addEventListener("click",e=>{
+    if(!mq.matches)return;const row=e.target.closest(".tree-row");
+    if(row&&!e.target.closest(".tree-actions")&&!row.querySelector(".folder-icon"))setMTab("main");
+  });
+  document.querySelectorAll(".block-item").forEach(b=>b.addEventListener("click",()=>{if(mq.matches)setMTab("main");}));
+  $("#openAssetsBtn").addEventListener("click",()=>{if(mq.matches)setMTab("props");});
+  /* Tocar un elemento en la vista previa abre sus propiedades. */
+  window.addEventListener("message",e=>{if(mq.matches&&e.data&&e.data.type==="wb-select")setMTab("props");});
+  /* Botones de la barra superior sin texto en móvil: se les pone etiqueta. */
+  document.querySelectorAll(".top-actions .top-btn").forEach(b=>{if(!b.title)b.title=b.textContent.trim();b.setAttribute("aria-label",b.title);});
+  const hint=document.querySelector(".blocks-panel .muted.small");
+  function touchHint(){if(hint)hint.textContent=matchMedia("(hover:none)").matches?"Tocá un bloque para agregarlo a la página.":"Arrastrá un bloque al lienzo o hacé clic para agregarlo.";}
+  touchHint();
+})();

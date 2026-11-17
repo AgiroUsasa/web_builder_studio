@@ -3,6 +3,6 @@
    La clave "anon" es pública por diseño: la seguridad la dan las reglas del archivo supabase/setup.sql.
    Si los dejás vacíos, la app guarda todo solo en este navegador. */
 window.WB_CONFIG = {
-  supabaseUrl: "",
+  supabaseUrl: "https://vasnarizgxquvkocgixj.supabase.co",
   supabaseAnonKey: ""
 };

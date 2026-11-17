@@ -9,6 +9,12 @@ Editor visual de sitios web en español, inspirado en el flujo de trabajo de Vis
 3. Abrí `index.html` en un navegador. También podés usar la extensión Live Server.
 4. Para resaltado de sintaxis y autocompletado, necesitás conexión a internet porque CodeMirror se carga desde CDN. Si no hay conexión, el editor sigue funcionando como área de texto.
 
+## Uso en celular y tablet
+
+- En pantallas de hasta 900 px el editor muestra un panel por vez, con pestañas abajo: **Archivos** (explorador y bloques), **Editor** (diseño, código y vista previa) y **Propiedades**.
+- Tocar un bloque lo agrega a la página, y tocar un elemento en la vista previa abre sus propiedades.
+- Se puede instalar como app: en Android, menú del navegador → *Instalar app*; en iPhone, Compartir → *Agregar a pantalla de inicio*. Necesita que la página se abra por HTTPS (GitHub Pages ya lo hace).
+
 ## Publicar en GitHub Pages con cuentas en la nube (Supabase)
 
 GitHub Pages solo sirve archivos estáticos, así que las cuentas y los proyectos se guardan en Supabase (plan gratuito). El navegador habla directo con Supabase; `server.js` no se usa.

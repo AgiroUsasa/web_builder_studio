@@ -273,3 +273,67 @@ span.ad-cta{background:transparent;color:var(--link);border-color:var(--line2)}
 .ad-dots button{width:16px;height:6px;padding:0;border:0;border-radius:3px;background:var(--line2)}
 .ad-dots button.active{background:var(--accent)}
 @media(max-width:760px){.ad-banner{flex-wrap:wrap}.ad-cta{margin-left:56px}}
+
+/* 30. MÓVIL Y TABLET: un panel por vez, con barra de pestañas abajo. */
+.mobile-nav{display:none}
+@media(hover:none){.tree-row .tree-actions{opacity:1}}
+@media(max-width:900px){
+  :root{--mnav:58px}
+  html,body{overscroll-behavior:none;-webkit-text-size-adjust:100%}
+  button,.tree-row,.block-item{touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+  /* Barra superior: solo iconos */
+  .topbar{gap:8px;padding:0 10px;height:54px}
+  .brand>span:last-child{display:none}
+  .project-title{display:flex;flex:1;min-width:0;border-left:0;padding-left:2px}
+  .project-title span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:13px}
+  .top-actions{gap:6px;margin-left:0}
+  .top-actions .top-btn{font-size:0;gap:0;width:40px;height:40px;padding:0}
+  .top-btn .ic{width:18px;height:18px}
+  .user-btn{min-height:40px}
+  /* Un panel por vez */
+  .app-layout,.app-layout.hide-explorer,.app-layout.hide-inspector,.app-layout.hide-explorer.hide-inspector{display:block;grid-template-columns:1fr;height:calc(100vh - 54px - var(--mnav) - env(safe-area-inset-bottom,0px));height:calc(100dvh - 54px - var(--mnav) - env(safe-area-inset-bottom,0px));min-height:0}
+  .app-layout>.explorer,.app-layout>.main-panel,.app-layout>.inspector{display:none!important;width:100%;height:100%;max-height:none;border:0;grid-column:auto;grid-row:auto}
+  body.m-files .app-layout>.explorer{display:block!important;padding:12px 14px 24px}
+  body.m-props .app-layout>.inspector{display:block!important;padding-bottom:24px}
+  body:not(.m-files):not(.m-props) .app-layout>.main-panel{display:flex!important}
+  .panel-hide,.reopen-controls,.explorer-show-blocks{display:none!important}
+  body .explorer .blocks-panel{display:block!important;width:auto}
+  .block-item small{display:block}
+  .block-item{padding-top:11px;padding-bottom:11px}
+  .tree-row{height:42px;font-size:13px}
+  .tree-row .tree-actions{opacity:1;padding:10px 12px}
+  .project-folder{font-size:11px;padding:10px 4px}
+  .explorer-bottom button,.explorer-bottom{font-size:12px}
+  /* Editor */
+  .statusbar{display:none}
+  .toolbar-right>span:nth-child(2){display:none}
+  .mode{padding:10px 14px}
+  .canvas-heading{padding:0 12px}
+  .canvas-heading small{display:none}
+  .code-statusbar span:nth-child(2){display:none}
+  .CodeMirror{font-size:14px}
+  .top-btn,.outline-btn{min-height:40px}
+  input,select,textarea,.text-input{font-size:16px}
+  .dialog{width:min(420px,calc(100% - 24px));max-height:calc(100dvh - 24px);overflow:auto}
+  .item-menu button{padding:12px 14px;font-size:14px}
+  /* Barra inferior */
+  .mobile-nav{position:fixed;left:0;right:0;bottom:0;z-index:60;display:flex;height:calc(var(--mnav) + env(safe-area-inset-bottom,0px));padding-bottom:env(safe-area-inset-bottom,0px);background:var(--bar);border-top:1px solid var(--line)}
+  .mobile-nav button{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;background:none;border:0;color:var(--text3);font-size:11px;font-weight:600}
+  .mobile-nav button.active{color:var(--accent)}
+  .mobile-nav .ic{width:21px;height:21px}
+  body.at-home .mobile-nav,body.logged-out .mobile-nav{display:none}
+  .home-view{bottom:env(safe-area-inset-bottom,0px)}
+}
+@media(max-width:480px){
+  body:not(.at-home) .project-title{display:none}
+  .top-actions{margin-left:auto}
+  .top-actions .top-btn{width:38px}
+  .auth-view{padding:14px}.auth-card{padding:22px 18px 18px}
+}
+@media(max-width:900px){
+  .home-tools{flex-wrap:wrap}
+  .home-tools .search-wrap{flex:1 1 100%}
+  .home-tools .top-btn{flex:1 1 100%;white-space:nowrap;min-height:44px}
+  .ad-text{flex:1 1 calc(100% - 64px)}
+  .ad-cta{margin-left:56px}
+}
