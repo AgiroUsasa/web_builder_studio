@@ -418,14 +418,14 @@ function persist(pr) {
   try{localStorage.setItem(PROJ_PREFIX+pr.id,JSON.stringify(pr));}catch(e){return false;}
   const meta={id:pr.id,name:pr.name,created:pr.created||pr.updated,updated:pr.updated,files:Object.keys(pr.files).length,preview:buildThumbDoc(pr)};
   const k=library.findIndex(x=>x.id===pr.id);if(k>=0)library[k]=meta;else library.push(meta);
-  writeLibrary();return true;
+  writeLibrary();queueSync(pr.id,"put");return true;
 }
 function saveProject(silent){
   saveEditorToFile();
   project.name=$("#projectNameLabel").textContent||project.name;project.title=$("#siteTitle").value;project.accent=$("#accentColor").value;
   if(!project.id){project.id=newId();project.created=Date.now();}
   const ok=persist(project);
-  if(!silent){if(ok){showToast("Proyecto guardado en este navegador");$("#codeStatus").textContent="Guardado";}else showToast("No se pudo guardar: quizá las imágenes son demasiado grandes");}
+  if(!silent){if(ok){showToast(serverMode?"Proyecto guardado en tu cuenta":"Proyecto guardado en este navegador");$("#codeStatus").textContent="Guardado";}else showToast("No se pudo guardar: quizá las imágenes son demasiado grandes");}
   return ok;
 }
 function readLibrary() {
@@ -529,7 +529,7 @@ function deleteProject(id) {
   const m=library.find(x=>x.id===id);if(!m)return;
   if(!confirm(`¿Eliminar el proyecto "${m.name}"? Esta acción no se puede deshacer.`))return;
   try{localStorage.removeItem(PROJ_PREFIX+id);}catch(e){}
-  library=library.filter(x=>x.id!==id);writeLibrary();
+  library=library.filter(x=>x.id!==id);writeLibrary();queueSync(id,"del");
   if(project.id===id)project.id=null;
   renderHome();showToast("Proyecto eliminado");
 }
@@ -635,6 +635,72 @@ async function hashPassword(pw,saltHex,forceFallback) {
   let hh=sha256Fallback(seed);for(let i=0;i<20000;i++)hh=sha256Fallback(hh);
   return "f"+toHex(hh);
 }
+/* SERVIDOR: si la app se abre desde server.js, las cuentas y proyectos viven en el servidor y se ven desde cualquier dispositivo.
+   Si se abre el HTML directamente (sin servidor) todo sigue funcionando en modo local, como antes. */
+let serverMode=false, migratedCode=null;
+async function api(method,url,body){
+  const r=await fetch(url,{method,credentials:"same-origin",headers:{"Content-Type":"application/json","X-WB":"1"},body:body===undefined?undefined:JSON.stringify(body)});
+  let d={};try{d=await r.json();}catch(e){}
+  if(!r.ok)throw Object.assign(new Error(d.error||"No se pudo completar la operación."),{status:r.status});
+  return d;
+}
+async function detectServer(){try{const r=await fetch("api/ping",{cache:"no-store"});serverMode=r.ok&&(await r.json()).ok===true;}catch(e){serverMode=false;}}
+/* Cola de cambios pendientes: sobrevive si se cierra la pestaña o se corta internet, y se envía al volver. */
+const pendKey=()=>`webbuilder-pending-${currentUser.id}`;
+function pendGet(){try{return JSON.parse(localStorage.getItem(pendKey()))||{};}catch(e){return {};}}
+function pendSet(o){try{localStorage.setItem(pendKey(),JSON.stringify(o));}catch(e){}}
+let syncTimer=null, flushing=null;
+function queueSync(id,op){if(!serverMode||!currentUser)return;const q=pendGet();q[id]=op;pendSet(q);clearTimeout(syncTimer);syncTimer=setTimeout(()=>flushPending().catch(()=>{}),700);}
+function sessionExpired(){showToast("Tu sesión venció. Volvé a ingresar.");setTimeout(()=>location.reload(),1500);}
+function flushPending(){
+  if(!serverMode||!currentUser)return Promise.resolve();
+  if(flushing)return flushing;
+  return flushing=(async()=>{
+    for(;;){
+      const q=pendGet(),ids=Object.keys(q);if(!ids.length)return;
+      for(const id of ids){
+        try{
+          if(q[id]==="del")await api("DELETE","api/project/"+id);
+          else{const pr=loadStored(id),m=library.find(x=>x.id===id);if(pr&&m)await api("PUT","api/project/"+id,{project:pr,meta:m});}
+          const n=pendGet();if(n[id]===q[id]){delete n[id];pendSet(n);}
+        }catch(e){if(e.status===401)sessionExpired();else{clearTimeout(syncTimer);syncTimer=setTimeout(()=>flushPending().catch(()=>{}),15000);}return;}
+      }
+    }
+  })().finally(()=>{flushing=null;});
+}
+/* Trae lo último del servidor: envía primero lo pendiente y después baja los proyectos nuevos o más recientes. */
+async function pullFromServer(){
+  await flushPending();
+  const remote=(await api("GET","api/library")).library,pend=pendGet(),ids=new Set(remote.map(m=>m.id));
+  library=library.filter(m=>{if(ids.has(m.id)||pend[m.id]==="put")return true;try{localStorage.removeItem(PROJ_PREFIX+m.id);}catch(e){}return false;});
+  for(const m of remote){
+    if(pend[m.id])continue;
+    const loc=library.find(x=>x.id===m.id);
+    if(loc&&loc.updated>=m.updated&&loadStored(m.id))continue;
+    const pr=(await api("GET","api/project/"+m.id)).project;
+    try{localStorage.setItem(PROJ_PREFIX+m.id,JSON.stringify(pr));}catch(e){continue;}
+    if(loc)Object.assign(loc,m);else library.push(m);
+  }
+  writeLibrary();
+}
+let pulling=false;
+function refreshFromServer(){
+  if(!serverMode||!currentUser||inEditor||pulling)return;
+  pulling=true;pullFromServer().then(()=>renderHome()).catch(e=>{if(e.status===401)sessionExpired();}).finally(()=>{pulling=false;});
+}
+window.addEventListener("focus",refreshFromServer);
+document.addEventListener("visibilitychange",()=>{if(!document.hidden)refreshFromServer();});
+/* Cuentas creadas antes en este navegador: al ingresar por primera vez con el servidor se suben a él, con sus proyectos. */
+async function migrateLocalAccount(lu,pw,remember){
+  const r=await api("POST","api/register",{name:lu.name,email:lu.email,password:pw,remember});
+  const oldLib=`webbuilder-studio-library-v4-${lu.id}`,oldProj=`webbuilder-studio-project-v4-${lu.id}-`;
+  currentUser=r.user;setAccountKeys(r.user.id);library=[];
+  try{(JSON.parse(localStorage.getItem(oldLib))||[]).forEach(m=>{const raw=localStorage.getItem(oldProj+m.id);if(raw){localStorage.setItem(PROJ_PREFIX+m.id,raw);library.push(m);}});writeLibrary();library.forEach(m=>queueSync(m.id,"put"));}catch(e){console.warn("No se pudieron copiar los proyectos locales",e);}
+  migratedCode=r.code;return r.user;
+}
+function clearLocalCache(){
+  try{const del=[];for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(k===LIB_KEY||k.startsWith(PROJ_PREFIX)||k===pendKey())del.push(k);}del.forEach(k=>localStorage.removeItem(k));}catch(e){}
+}
 function readUsers() { try{return JSON.parse(localStorage.getItem(USERS_KEY))||{};}catch(e){return {};} }
 function writeUsers(u) { localStorage.setItem(USERS_KEY,JSON.stringify(u)); }
 /* Los proyectos guardados antes de existir las cuentas pasan a la primera cuenta que se crea. */
@@ -657,6 +723,7 @@ function newRecoveryCode(){const A="ABCDEFGHJKLMNPQRSTUVWXYZ23456789",b=crypto.g
 function normCode(c){return String(c||"").toUpperCase().replace(/[^A-Z0-9]/g,"");}
 async function setRecovery(user){const code=newRecoveryCode();user.recSalt=toHex(crypto.getRandomValues(new Uint8Array(16)));user.recHash=await hashPassword(normCode(code),user.recSalt);return code;}
 async function resetPassword(email,code,newPw) {
+  if(serverMode){const r=await api("POST","api/reset",{email,code,password:newPw});return {user:r.user,code:r.code};}
   const users=readUsers(),user=users[email.toLowerCase()];
   /* El hash se calcula aunque la cuenta no exista, para no revelar qué correos tienen cuenta. */
   const h=await hashPassword(normCode(code),user?.recSalt||toHex(new Uint8Array(16)),isFallbackHash(user?.recHash));
@@ -682,11 +749,13 @@ $("#copyRecoveryBtn").addEventListener("click",()=>{
 });
 $("#newRecoveryBtn").addEventListener("click",async()=>{
   if(!currentUser||!confirm("El código de recuperación actual dejará de funcionar. ¿Generar uno nuevo?"))return;
+  if(serverMode){try{const r=await api("POST","api/recovery");$("#settingsDialog").close();showRecoveryCode(r.code,null,"new");}catch(e){showToast(e.message);}return;}
   const users=readUsers(),u=users[currentUser.email];if(!u)return;
   const code=await setRecovery(u);writeUsers(users);currentUser=u;
   $("#settingsDialog").close();showRecoveryCode(code,null,"new");
 });
 async function registerUser(name,email,pw) {
+  if(serverMode){const r=await api("POST","api/register",{name,email,password:pw,remember:$("#authRemember").checked});return {user:r.user,code:r.code};}
   const users=readUsers(),key=email.toLowerCase();
   if(users[key])throw new Error("Ya existe una cuenta con ese correo.");
   const salt=toHex(crypto.getRandomValues(new Uint8Array(16)));
@@ -698,14 +767,25 @@ async function registerUser(name,email,pw) {
   return {user,code};
 }
 async function loginUser(email,pw) {
+  if(serverMode){
+    const remember=$("#authRemember").checked;
+    try{return (await api("POST","api/login",{email,password:pw,remember})).user;}
+    catch(e){
+      if(e.status!==401)throw e;
+      const lu=readUsers()[email.toLowerCase()];
+      if(!lu||await hashPassword(pw,lu.salt,isFallbackHash(lu.hash))!==lu.hash)throw e;
+      return migrateLocalAccount(lu,pw,remember);
+    }
+  }
   const user=readUsers()[email.toLowerCase()];
   const salt=user?user.salt:toHex(new Uint8Array(16));
   const hash=await hashPassword(pw,salt,isFallbackHash(user?.hash));
   if(!user||hash!==user.hash)throw new Error("Correo o contraseña incorrectos.");
   return user;
 }
-function enterAccount(user,remember) {
+async function enterAccount(user,remember) {
   currentUser=user;setAccountKeys(user.id);readLibrary();
+  if(serverMode){try{await pullFromServer();}catch(e){if(e.status===401){sessionExpired();return;}showToast("Sin conexión: se muestran los proyectos guardados en este dispositivo");}}
   const data=JSON.stringify({uid:user.id});
   localStorage.removeItem(SESSION_KEY);sessionStorage.removeItem(SESSION_KEY);
   (remember===false?sessionStorage:localStorage).setItem(SESSION_KEY,data);
@@ -761,7 +841,9 @@ $("#authForm").addEventListener("submit",async e=>{
       const r=await resetPassword(email,$("#authCode").value,pw);authFails=0;
       showRecoveryCode(r.code,()=>enterAccount(r.user,true),"reset");
     }else{
-      const user=await loginUser(email,pw);authFails=0;enterAccount(user,$("#authRemember").checked);
+      const user=await loginUser(email,pw);authFails=0;
+      if(migratedCode){const c=migratedCode;migratedCode=null;showRecoveryCode(c,()=>enterAccount(user,$("#authRemember").checked),"register");}
+      else enterAccount(user,$("#authRemember").checked);
     }
   }catch(ex){
     if(authMode!=="register"&&++authFails>=5){authLockUntil=Date.now()+30000;authFails=0;}
@@ -795,8 +877,9 @@ $("#userBtn").addEventListener("click",e=>{
   menu.addEventListener("click",ev=>{const act=ev.target.closest("[data-act]")?.dataset.act;if(act==="settings"){closeItemMenu();openSettings();}else if(act==="logout"){closeItemMenu();logout();}});
   itemMenu=menu;
 });
-function logout() {
+async function logout() {
   if(inEditor&&project.id&&!saveProject(true)&&!confirm("No se pudo guardar el proyecto. ¿Cerrar sesión igual y perder los cambios?"))return;
+  if(serverMode){try{await flushPending();if(!Object.keys(pendGet()).length)clearLocalCache();}catch(e){}api("POST","api/logout").catch(()=>{});}
   localStorage.removeItem(SESSION_KEY);sessionStorage.removeItem(SESSION_KEY);
   stopAds();currentUser=null;inEditor=false;library=[];LIB_KEY="";PROJ_PREFIX="";
   /* Se vacía lo que quedó en memoria para que la próxima cuenta no vea nada ajeno. */
@@ -806,7 +889,9 @@ function logout() {
   renderTree();renderAssets();$("#projectGrid").innerHTML="";
   showAuth("login");
 }
-function startAuth() {
+async function startAuth() {
+  await detectServer();
+  if(serverMode){let u=null;try{u=(await api("GET","api/me")).user;}catch(e){}if(u)enterAccount(u,true);else showAuth("login");return;}
   let uid=null;
   try{uid=JSON.parse(localStorage.getItem(SESSION_KEY)||sessionStorage.getItem(SESSION_KEY)||"null")?.uid;}catch(e){}
   const user=uid&&Object.values(readUsers()).find(u=>u.id===uid);
