@@ -4,5 +4,5 @@
    Si los dejás vacíos, la app guarda todo solo en este navegador. */
 window.WB_CONFIG = {
   supabaseUrl: "https://vasnarizgxquvkocgixj.supabase.co",
-  supabaseAnonKey: ""
+  supabaseAnonKey: "sb_publishable_xhqovbh0Q9xeXBkU8jliLg_luSp_uLt"
 };
