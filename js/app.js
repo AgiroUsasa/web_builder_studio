@@ -408,7 +408,7 @@ function buildThumbDoc(pr) {
   const keys=Object.keys(pr.files), main=pr.files["index.html"]!==undefined?"index.html":keys.find(p=>p.toLowerCase().endsWith(".html"));
   if(!main)return "";
   const html=pr.files[main].replace(/<script[\s\S]*?<\/script>/gi,""), css=allCSS(pr);
-  const style=`<style>${css}\n:root{--accent:${pr.accent||"#7857f5"};}*{max-width:100%;}</style>`;
+  const style=`<meta name="color-scheme" content="light"><style>:root{color-scheme:light;}\n${css}\n:root{--accent:${pr.accent||"#7857f5"};}*{max-width:100%;}</style>`;
   const doc=composeDoc(html,style,"")||`<!doctype html><html><head><meta charset="utf-8">${style}</head><body>${html}</body></html>`;
   return doc.length>60000?"":doc;
 }
